@@ -32,55 +32,33 @@ async def _req(method: HttpMethod, path: str, body: dict | None = None, params: 
     return [TextContent(type="text", text=json.dumps({"error": error}, indent=2))]
 
 
-@tool(description="List all forms in the Kit account", annotations=ToolAnnotations(readOnlyHint=True))
-async def list_forms() -> Result:
-    """List all landing page forms with their IDs and names."""
+@tool(description="Kit: list all landing page forms", annotations=ToolAnnotations(readOnlyHint=True))
+async def kit_list_forms() -> Result:
     return await _req(HttpMethod.GET, "/forms")
 
 
-@tool(description="List all email sequences", annotations=ToolAnnotations(readOnlyHint=True))
-async def list_sequences() -> Result:
-    """List all sequences (automated email courses) with their IDs and subscriber counts."""
+@tool(description="Kit: list all email sequences", annotations=ToolAnnotations(readOnlyHint=True))
+async def kit_list_sequences() -> Result:
     return await _req(HttpMethod.GET, "/sequences")
 
 
-@tool(description="List subscribers with optional pagination", annotations=ToolAnnotations(readOnlyHint=True))
-async def list_subscribers(page: int = 1, limit: int = 50) -> Result:
-    """List subscribers.
-    
-    Args:
-        page: Page number (default 1)
-        limit: Results per page (default 50)
-    """
+@tool(description="Kit: list subscribers with optional pagination", annotations=ToolAnnotations(readOnlyHint=True))
+async def kit_list_subscribers(page: int = 1, limit: int = 50) -> Result:
     params = {"page": page, "limit": limit}
     return await _req(HttpMethod.GET, "/subscribers", params=params)
 
 
-@tool(description="Get a subscriber's details by ID or email", annotations=ToolAnnotations(readOnlyHint=True))
-async def get_subscriber(subscriber_id: Optional[int] = None, email: Optional[str] = None) -> Result:
-    """Get subscriber profile.
-    
-    Args:
-        subscriber_id: Subscriber ID
-        email: Email address (alternative to ID)
-    """
+@tool(description="Kit: get a subscriber's details by ID or email", annotations=ToolAnnotations(readOnlyHint=True))
+async def kit_get_subscriber(subscriber_id: Optional[int] = None, email: Optional[str] = None) -> Result:
     if subscriber_id:
         return await _req(HttpMethod.GET, f"/subscribers/{subscriber_id}")
     elif email:
-        params = {"email_address": email}
-        return await _req(HttpMethod.GET, "/subscribers", params=params)
+        return await _req(HttpMethod.GET, "/subscribers", params={"email_address": email})
     return [TextContent(type="text", text=json.dumps({"error": "Must provide subscriber_id or email"}, indent=2))]
 
 
-@tool(description="Add a new subscriber to the account", annotations=ToolAnnotations(readOnlyHint=False))
-async def add_subscriber(email: str, first_name: Optional[str] = None, fields: Optional[str] = None) -> Result:
-    """Subscribe a new email address.
-    
-    Args:
-        email: Email address
-        first_name: Optional first name
-        fields: Optional custom fields as JSON object
-    """
+@tool(description="Kit: add a new subscriber to the account", annotations=ToolAnnotations(readOnlyHint=False))
+async def kit_add_subscriber(email: str, first_name: Optional[str] = None, fields: Optional[str] = None) -> Result:
     body = {"email": email}
     if first_name:
         body["first_name"] = first_name
@@ -89,25 +67,18 @@ async def add_subscriber(email: str, first_name: Optional[str] = None, fields: O
     return await _req(HttpMethod.POST, "/subscribers", body=body)
 
 
-@tool(description="Add a tag to a subscriber", annotations=ToolAnnotations(readOnlyHint=False))
-async def tag_subscriber(subscriber_id: int, tag_id: int) -> Result:
-    """Tag a subscriber.
-    
-    Args:
-        subscriber_id: Subscriber ID
-        tag_id: Tag ID to apply
-    """
-    body = {"tag": {"id": tag_id}}
-    return await _req(HttpMethod.POST, f"/subscribers/{subscriber_id}/tags", body=body)
+@tool(description="Kit: add a tag to a subscriber", annotations=ToolAnnotations(readOnlyHint=False))
+async def kit_tag_subscriber(subscriber_id: int, tag_id: int) -> Result:
+    return await _req(HttpMethod.POST, f"/subscribers/{subscriber_id}/tags", body={"tag": {"id": tag_id}})
 
 
 kit_tools = [
-    list_forms,
-    list_sequences,
-    list_subscribers,
-    get_subscriber,
-    add_subscriber,
-    tag_subscriber,
+    kit_list_forms,
+    kit_list_sequences,
+    kit_list_subscribers,
+    kit_get_subscriber,
+    kit_add_subscriber,
+    kit_tag_subscriber,
 ]
 
 __all__ = ["kit", "kit_tools"]

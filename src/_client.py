@@ -39,7 +39,7 @@ KIT_API_KEY = os.getenv("KIT_API_KEY", "")
 MCP_SERVER_SLUG = os.getenv("MCP_SERVER_SLUG", "JiayuWang/kit-mcp")
 MODEL           = os.getenv("DEDALUS_TEST_MODEL", "anthropic/claude-sonnet-4-5")
 
-REQUIRED_TOOLS = ["list_forms", "list_sequences", "list_subscribers", "get_subscriber", "add_subscriber", "tag_subscriber"]
+REQUIRED_TOOLS = ["kit_list_forms", "kit_list_sequences", "kit_list_subscribers", "kit_get_subscriber", "kit_add_subscriber", "kit_tag_subscriber"]
 
 
 def _passed(tool_name: str, tool_events: list) -> bool:
@@ -99,17 +99,17 @@ async def main() -> int:
 
     results: dict[str, bool] = {}
 
-    results["list_forms"] = await _run_tool(runner, creds, "list_forms",
+    results["kit_list_forms"] = await _run_tool(runner, creds, "kit_list_forms",
         "Call list_forms and show each form id and name.")
-    results["list_sequences"] = await _run_tool(runner, creds, "list_sequences",
+    results["kit_list_sequences"] = await _run_tool(runner, creds, "kit_list_sequences",
         "Call list_sequences and show sequence names.")
-    results["list_subscribers"] = await _run_tool(runner, creds, "list_subscribers",
+    results["kit_list_subscribers"] = await _run_tool(runner, creds, "kit_list_subscribers",
         "Call list_subscribers with limit=5.")
-    results["get_subscriber"] = await _run_tool(runner, creds, "get_subscriber",
+    results["kit_get_subscriber"] = await _run_tool(runner, creds, "kit_get_subscriber",
         "Call list_subscribers, take the first subscriber's id, then call get_subscriber on it.")
-    results["add_subscriber"] = await _run_tool(runner, creds, "add_subscriber",
+    results["kit_add_subscriber"] = await _run_tool(runner, creds, "kit_add_subscriber",
         "Call add_subscriber with email='dedalus-smoke-test@example.com' and first_name='Dedalus'.")
-    results["tag_subscriber"] = await _run_tool(runner, creds, "tag_subscriber",
+    results["kit_tag_subscriber"] = await _run_tool(runner, creds, "kit_tag_subscriber",
         "Call list_subscribers to get a subscriber id, then tag_subscriber with that id and tag_id=1.")
 
     print("\n" + "=" * 60)
